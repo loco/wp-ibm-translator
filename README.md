@@ -8,7 +8,7 @@ External translation APIs have been available in Loco Translate since version 2.
 ### Installation
 
 This plugin is not available from the WordPress plugin directory, so can ony be installed manually.
-That means placing its files into a folder inside `wp-content/plugins`. The name of the folder is not important.
+That means placing its files into a folder inside `wp-content/plugins`. The name of the folder is not important as long as it doesn't conflict with another plugin.
 
 With Git, you can install the current master branch as follows from your WordPress site root:
 

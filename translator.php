@@ -2,9 +2,9 @@
 /**
  * Hook fired as a filter for the "ibm" translation api
  *
- * @param string[] input strings
- * @param Loco_Locale target locale for translations
- * @param array our own api configuration
+ * @param string[] $sources Input strings
+ * @param Loco_Locale $locale Target locale for translations
+ * @param array $config API configuration hooked via `loco_api_providers`
  * @return string[] output strings
  * @throws Loco_error_Exception
  */
@@ -19,7 +19,7 @@ function ibm_translator_process_batch( array $sources, Loco_Locale $locale, arra
     // map full locale to a supported language tag
     // be warned that not all regional variations are supported, e.g. pt-BR will map to just "pt"
     $tag = (string) $locale;
-    $map = array (
+    $map = [
         // Known regional locale variations:
         'fr_CA' => 'fr-CA',
         'zh_TW' => 'zh-TW',
@@ -28,7 +28,7 @@ function ibm_translator_process_batch( array $sources, Loco_Locale $locale, arra
         // Other common mappings to supported codes
         'no' => 'nn',
         'no_NO' => 'nn',
-    );
+    ];
     if( array_key_exists($tag,$map) ){
         $tag = $map[$tag];
     }
@@ -38,21 +38,21 @@ function ibm_translator_process_batch( array $sources, Loco_Locale $locale, arra
     
     // request body looks like: {"text":["Hello world",...],"source":"en","target":"el"}
     // front end should have already split into a suitable sized batch ...
-    $result = wp_remote_request( $url, array (
+    $result = wp_remote_request( $url, [
         'method' => 'POST',
         'redirection' => 0,
         'user-agent' => sprintf('Loco Translate/%s; wp-%s', loco_plugin_version(), $GLOBALS['wp_version'] ),
         'reject_unsafe_urls' => false,
-        'headers' => array(
+        'headers' => [
             'Content-Type' => 'application/json',
             'Authorization' => $auth,
-        ),
-        'body' => json_encode( array(
+        ],
+        'body' => json_encode( [
             'source' => 'en',
             'target' => $tag,
             'text' => $sources,
-        ) ),
-    ) );
+        ] ),
+    ] );
     
     if( $result instanceof WP_Error ){
         foreach( $result->get_error_messages() as $message ){
@@ -65,7 +65,7 @@ function ibm_translator_process_batch( array $sources, Loco_Locale $locale, arra
         $data = json_decode( $result['body'], true );
     }
     else {
-        $data = array();
+        $data = [];
     }
 
     // errors look like: {"code":401, "error": "Unauthorized"}
@@ -82,7 +82,7 @@ function ibm_translator_process_batch( array $sources, Loco_Locale $locale, arra
     }
    
     // front end requires array that matches $sources
-    $targets = array();
+    $targets = [];
     foreach( $data['translations'] as $a ){
         $targets[] = $a['translation'];
     }

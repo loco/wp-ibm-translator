@@ -12,13 +12,13 @@ if( is_admin() ){
     // Append our api via the `loco_api_providers` filter hook.
     // This should be available all the time Loco Translate is running.
     function ibm_translator_filter_apis( array $apis ){
-        $apis[] = array (
+        $apis[] = [
             'id' => 'ibm',
             'name' => 'IBM Watson™',
             'key' => loco_constant('IBM_API_KEY'),
             'api' => loco_constant('IBM_API_URL'),
             'url' => 'https://cloud.ibm.com/catalog/services/language-translator',
-        );
+        ];
         return $apis;
     }
     add_filter('loco_api_providers','ibm_translator_filter_apis',10,1);
