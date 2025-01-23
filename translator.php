@@ -2,13 +2,13 @@
 /**
  * Hook fired as a filter for the "ibm" translation api
  *
- * @param string[] $sources Input strings
- * @param Loco_Locale $locale Target locale for translations
- * @param array $config API configuration hooked via `loco_api_providers`
- * @return string[] output strings
- * @throws Loco_error_Exception
+ * @param string[] $targets translated strings, initially empty
+ * @param string[][] $items input messages with keys, "source", "context" and "notes"
+ * @param Loco_Locale $Locale target locale for translations
+ * @param array $config This api's configuration
+ * @return string[] Translated strings
  */
-function ibm_translator_process_batch( array $sources, Loco_Locale $locale, array $config ){
+function ibm_translator_process_batch( array $targets, array $items, Loco_Locale $locale, array $config ){
     
     // cloud resource URL is part of the authentication, it takes form like "https://api.eu-gb.language-translator.watson.cloud.ibm.com/instances/xxxx/v3/translate?version=xxx"
     $url = $config['api'];
@@ -35,9 +35,14 @@ function ibm_translator_process_batch( array $sources, Loco_Locale $locale, arra
     else {
         $tag = $locale->lang;
     }
-    
+
+    // unwind input items. This API only uses source text.
+    $sources = [];
+    foreach( $items as $item ){
+        $sources[] = mock_translator_translate_text($item['source']);
+    }
+
     // request body looks like: {"text":["Hello world",...],"source":"en","target":"el"}
-    // front end should have already split into a suitable sized batch ...
     $result = wp_remote_request( $url, [
         'method' => 'POST',
         'redirection' => 0,
@@ -53,7 +58,7 @@ function ibm_translator_process_batch( array $sources, Loco_Locale $locale, arra
             'text' => $sources,
         ] ),
     ] );
-    
+
     if( $result instanceof WP_Error ){
         foreach( $result->get_error_messages() as $message ){
             throw new Loco_error_Exception($message);

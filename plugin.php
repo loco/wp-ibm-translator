@@ -4,7 +4,7 @@ Plugin Name: IBM Translation API for Loco Translate
 Plugin URI: https://github.com/loco/wp-ibm-translator
 Description: Integrates the IBM Watson™ Language Translator service into Loco Translate
 Author: Tim Whitlock
-Version: 1.0.0
+Version: 1.1.0
 Author URI: https://localise.biz/wordpress/plugin
 */
 if( is_admin() ){
@@ -27,8 +27,8 @@ if( is_admin() ){
     // We only need to do this when the Loco Translate Ajax hook is running.
     function ibm_translator_ajax_init(){
         require __DIR__.'/translator.php';
-        add_filter('loco_api_translate_ibm','ibm_translator_process_batch',0,3);
+        add_filter('loco_api_translate_ibm','ibm_translator_process_batch',0,4);
     }
     add_action('loco_api_ajax','ibm_translator_ajax_init',0,0);
-    
+
 }
